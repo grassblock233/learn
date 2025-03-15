@@ -14,7 +14,7 @@ void InitList(list node)
     node->next = NULL;
 }
 
-_Bool CreateList(list node, int element)
+void CreateList(list node, int element)
 {
     for (;;)
     {
@@ -29,46 +29,15 @@ _Bool CreateList(list node, int element)
     }
 
     list head = malloc(sizeof(struct ListNode));
-    if (head == NULL)
-    {
-        return 0;
-    }
-    head->element = element;
     head->next = NULL;
+    head->element = element;
     node->next = head;
-    return 1;
 }
 
-void DeleteList(list LastNode)
+void InputList(list node)
 {
-    list temp = LastNode->next;
-    LastNode->next = temp->next;
-    free(temp);
-}
-
-void PrintList(list node)
-{
-    node = node->next;
-    for (;;)
-    {
-        if (node = NULL)
-        {
-            break;
-        }
-        else
-        {
-            printf("%d ", node->element);
-            node = node->next;
-        }
-    }
-}
-
-void InputElement(list node)
-{
-    int element;
     int length;
-    list FirstNode = node;
-
+    int element;
     scanf("%d", &length);
     for (int i = 0; i < length; i++)
     {
@@ -76,16 +45,87 @@ void InputElement(list node)
         CreateList(node, element);
         node = node->next;
     }
-
-    FirstNode->element = length;
 }
 
-void SearchRepeatElement(list nodeA, list nodeB, list nodeC)
+list CompareList(list nodeA, list nodeB)
 {
     nodeA = nodeA->next;
     nodeB = nodeB->next;
-    nodeC = nodeC->next;
+    list CommenList = malloc(sizeof(struct ListNode));
+    list FirstNode = CommenList;
+    InitList(CommenList);
+    while (nodeA && nodeB)
+    {
+        if (nodeA->element > nodeB->element)
+        {
+            nodeB = nodeB->next;
+        }
+        else if (nodeA->element < nodeB->element)
+        {
+            nodeA = nodeA->next;
+        }
+        else
+        {
+            int CommenValue = nodeA->element;
+            list head = malloc(sizeof(struct ListNode));
+            head->next = NULL;
+            head->element = CommenValue;
+            CommenList->next = head;
+            CommenList = CommenList->next;
+            while (nodeA && nodeA->element == CommenValue)
+            {
+                nodeA = nodeA->next;
+            }
+            while (nodeB && nodeB->element == CommenValue)
+            {
+                nodeB = nodeB->next;
+            }
+        }
+    }
+    return FirstNode;
+}
 
+void FreeList(list node)
+{
+    list temp;
+
+    node = node->next;
+    for (;;)
+    {
+        if (node == NULL)
+        {
+            break;
+        }
+        temp = node;
+        node = node->next;
+        free(temp);
+    }
+}
+
+void CopyList(list Node_Dest, list Node_Sour)
+{
+    FreeList(Node_Dest);
+    InitList(Node_Dest);
+    list temp = Node_Sour->next;
+    Node_Dest->next = temp;
+    free(Node_Sour);
+}
+
+void PrintList(list node)
+{
+    node = node->next;
+    for (;;)
+    {
+        if (node == NULL)
+        {
+            break;
+        }
+        else
+        {
+            printf("%d ", node->element);
+        }
+        node = node->next;
+    }
 }
 
 int main()
@@ -93,8 +133,22 @@ int main()
     struct ListNode nodeA;
     struct ListNode nodeB;
     struct ListNode nodeC;
+    list CommenList1;
+    list CommenList2;
 
-    InputElement(&nodeA);
-    InputElement(&nodeB);
-    InputElement(&nodeC);
+    InitList(&nodeA);
+    InitList(&nodeB);
+    InitList(&nodeC);
+
+    InputList(&nodeA);
+    InputList(&nodeB);
+    InputList(&nodeC);
+
+    CommenList1 = CompareList(&nodeA, &nodeB);
+    CommenList2 = CompareList(CommenList1, &nodeC);
+
+    CopyList(&nodeA, CommenList2);
+    PrintList(&nodeA);
+
+    return 0;
 }
